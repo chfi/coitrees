@@ -16,18 +16,18 @@ extern crate libc;
 
 type GenericError = Box<dyn Error>;
 
-// Parse a i32 with no checking whatsoever. (e.g. non-number characters will just)
-fn i32_from_bytes_uncheckd(s: &[u8]) -> i32 {
+// Parse a i64 with no checking whatsoever. (e.g. non-number characters will just)
+fn i64_from_bytes_uncheckd(s: &[u8]) -> i64 {
     if s.is_empty() {
         0
     } else if s[0] == b'-' {
-        -s[1..].iter().fold(0, |a, b| a * 10 + (b & 0x0f) as i32)
+        -s[1..].iter().fold(0, |a, b| a * 10 + (b & 0x0f) as i64)
     } else {
-        s.iter().fold(0, |a, b| a * 10 + (b & 0x0f) as i32)
+        s.iter().fold(0, |a, b| a * 10 + (b & 0x0f) as i64)
     }
 }
 
-fn parse_bed_line(line: &[u8]) -> (&str, i32, i32) {
+fn parse_bed_line(line: &[u8]) -> (&str, i64, i64) {
     let n = line.len() - 1;
     let mut p = 0;
     for c in &line[p..n] {
@@ -46,7 +46,7 @@ fn parse_bed_line(line: &[u8]) -> (&str, i32, i32) {
         }
         p += 1;
     }
-    let first = i32_from_bytes_uncheckd(&line[p0..p]);
+    let first = i64_from_bytes_uncheckd(&line[p0..p]);
     p += 1;
     let p0 = p;
 
@@ -56,7 +56,7 @@ fn parse_bed_line(line: &[u8]) -> (&str, i32, i32) {
         }
         p += 1;
     }
-    let last = i32_from_bytes_uncheckd(&line[p0..p]) - 1;
+    let last = i64_from_bytes_uncheckd(&line[p0..p]) - 1;
 
     (seqname, first, last)
 }

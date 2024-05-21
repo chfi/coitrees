@@ -7,11 +7,11 @@ mod tests {
         use std::collections::HashSet;
 
         fn random_interval(
-            min_first: i32,
-            max_last: i32,
-            min_len: i32,
-            max_len: i32,
-        ) -> (i32, i32) {
+            min_first: i64,
+            max_last: i64,
+            min_len: i64,
+            max_len: i64,
+        ) -> (i64, i64) {
             let mut rng = thread_rng();
             let len = rng.gen_range(min_len..max_len + 1);
             let start = rng.gen_range(min_first..max_last - len + 1);
@@ -32,7 +32,7 @@ mod tests {
             let a: COITree<usize, usize> = COITree::new(&b);
 
             // check that intervals are sorted and that every value is generated
-            let mut last_first = i32::min_value();
+            let mut last_first = i64::min_value();
             let mut seen: HashSet<usize> = HashSet::new();
             for node in &a {
                 assert!(last_first <= node.first);
@@ -58,7 +58,7 @@ mod tests {
 
         // True iff the two intervals overlap.
         #[inline(always)]
-        fn overlaps(first_a: i32, last_a: i32, first_b: i32, last_b: i32) -> bool {
+        fn overlaps(first_a: i64, last_a: i64, first_b: i64, last_b: i64) -> bool {
             first_a <= last_b && last_a >= first_b
         }
 
@@ -66,8 +66,8 @@ mod tests {
         // We test against this algorithm which we assume to be correct.
         fn brute_force_query<T, I, F>(
             intervals: &[IntervalNode<T, I>],
-            query_first: i32,
-            query_last: i32,
+            query_first: i64,
+            query_last: i64,
             mut visit: F,
         ) where
             T: Copy,
@@ -84,8 +84,8 @@ mod tests {
         // Brute coverage calculation. `intervals` must be sorted.
         fn brute_force_coverage<T, I>(
             intervals: &[IntervalNode<T, I>],
-            query_first: i32,
-            query_last: i32,
+            query_first: i64,
+            query_last: i64,
         ) -> (usize, usize)
         where
             T: Copy,
@@ -116,7 +116,7 @@ mod tests {
         fn check_queries<I>(
             a: &COITree<u32, I>,
             b: &[IntervalNode<u32, I>],
-            queries: &mut [(i32, i32)],
+            queries: &mut [(i64, i64)],
         ) where
             I: IntWithMax,
         {
@@ -145,7 +145,7 @@ mod tests {
         fn check_coverage<I>(
             a: &COITree<u32, I>,
             b: &[IntervalNode<u32, I>],
-            queries: &mut [(i32, i32)],
+            queries: &mut [(i64, i64)],
         ) where
             I: IntWithMax,
         {
@@ -161,7 +161,7 @@ mod tests {
         fn check_count_queries<I>(
             a: &COITree<u32, I>,
             b: &[IntervalNode<u32, I>],
-            queries: &mut [(i32, i32)],
+            queries: &mut [(i64, i64)],
         ) where
             I: IntWithMax,
         {
@@ -181,7 +181,7 @@ mod tests {
         fn check_sorted_querent_queries<I>(
             a: &COITree<u32, I>,
             b: &[IntervalNode<u32, I>],
-            queries: &mut [(i32, i32)],
+            queries: &mut [(i64, i64)],
         ) where
             I: IntWithMax,
         {
@@ -215,7 +215,7 @@ mod tests {
         fn check_sorted_querent_unsorted_queries<I>(
             a: &COITree<u32, I>,
             b: &[IntervalNode<u32, I>],
-            queries: &mut [(i32, i32)],
+            queries: &mut [(i64, i64)],
         ) where
             I: IntWithMax,
         {
@@ -244,11 +244,11 @@ mod tests {
         }
 
         fn random_interval(
-            min_first: i32,
-            max_last: i32,
-            min_len: i32,
-            max_len: i32,
-        ) -> (i32, i32) {
+            min_first: i64,
+            max_last: i64,
+            min_len: i64,
+            max_len: i64,
+        ) -> (i64, i64) {
             let mut rng = thread_rng();
             let len = rng.gen_range(min_len..max_len + 1);
             let start = rng.gen_range(min_first..max_last - len + 1);
@@ -258,15 +258,15 @@ mod tests {
         fn check_random_queries<I, F>(
             n: usize,
             num_queries: usize,
-            max_last: i32,
-            min_len: i32,
-            max_len: i32,
-            query_min_len: i32,
-            query_max_len: i32,
+            max_last: i64,
+            min_len: i64,
+            max_len: i64,
+            query_min_len: i64,
+            query_max_len: i64,
             check: F,
         ) where
             I: IntWithMax,
-            F: Fn(&COITree<u32, I>, &[IntervalNode<u32, I>], &mut [(i32, i32)]),
+            F: Fn(&COITree<u32, I>, &[IntervalNode<u32, I>], &mut [(i64, i64)]),
         {
             let min_first = 0;
 
@@ -279,7 +279,7 @@ mod tests {
 
             let a = COITree::new(&b);
 
-            let mut queries: Vec<(i32, i32)> = Vec::with_capacity(num_queries);
+            let mut queries: Vec<(i64, i64)> = Vec::with_capacity(num_queries);
             for _ in 0..num_queries {
                 queries.push(random_interval(
                     min_first,
@@ -295,7 +295,7 @@ mod tests {
         fn check_random_queries_default<I, F>(n: usize, num_queries: usize, check: F)
         where
             I: IntWithMax,
-            F: Fn(&COITree<u32, I>, &[IntervalNode<u32, I>], &mut [(i32, i32)]),
+            F: Fn(&COITree<u32, I>, &[IntervalNode<u32, I>], &mut [(i64, i64)]),
         {
             let max_last = 1000000;
             let min_len = 20;
@@ -313,7 +313,7 @@ mod tests {
             );
         }
 
-        const CHECKS: [fn(&COITree<u32, usize>, &[IntervalNode<u32, usize>], &mut [(i32, i32)]);
+        const CHECKS: [fn(&COITree<u32, usize>, &[IntervalNode<u32, usize>], &mut [(i64, i64)]);
             4] = [
             check_queries,
             check_count_queries,
@@ -365,7 +365,7 @@ mod tests {
             }
         }
 
-        const CHECKS_U16: [fn(&COITree<u32, u16>, &[IntervalNode<u32, u16>], &mut [(i32, i32)]);
+        const CHECKS_U16: [fn(&COITree<u32, u16>, &[IntervalNode<u32, u16>], &mut [(i64, i64)]);
             4] = [
             check_queries,
             check_count_queries,

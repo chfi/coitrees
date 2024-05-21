@@ -36,11 +36,11 @@ where
     I: IntWithMax,
 {
     // subtree interval
-    subtree_last: i32,
+    subtree_last: i64,
 
     // interval
-    pub first: i32,
-    pub last: i32,
+    pub first: i64,
+    pub last: i64,
 
     // when this is the root of a simple subtree, left == right is the size
     // of the subtree, otherwise they are left, right child pointers.
@@ -55,7 +55,7 @@ where
     T: Clone,
     I: IntWithMax,
 {
-    pub fn new(first: i32, last: i32, metadata: T) -> IntervalNode<T, I> {
+    pub fn new(first: i64, last: i64, metadata: T) -> IntervalNode<T, I> {
         Self {
             subtree_last: last,
             first,
@@ -79,7 +79,7 @@ where
 
     /// Length spanned by the interval. (Interval are end-inclusive.)
     #[allow(clippy::len_without_is_empty)]
-    pub fn len(&self) -> i32 {
+    pub fn len(&self) -> i64 {
         (self.last - self.first + 1).max(0)
     }
 }
@@ -90,11 +90,11 @@ where
     T: Clone,
     I: IntWithMax,
 {
-    fn first(&self) -> i32 {
+    fn first(&self) -> i64 {
         self.first
     }
 
-    fn last(&self) -> i32 {
+    fn last(&self) -> i64 {
         self.last
     }
 
@@ -105,7 +105,7 @@ where
 
 #[test]
 fn test_interval_len() {
-    fn make_interval(first: i32, last: i32) -> IntervalNode<(), u32> {
+    fn make_interval(first: i64, last: i64) -> IntervalNode<(), u32> {
         IntervalNode::new(first, last, ())
     }
 
@@ -139,7 +139,7 @@ where
 {
     // Exactly the same as IntervalTree::query, but provides a reference with the
     // lifetime of the tree (not something we can guarantee with other implementations).
-    fn query_static<F>(&'a self, first: i32, last: i32, mut visit: F)
+    fn query_static<F>(&'a self, first: i64, last: i64, mut visit: F)
     where
         F: FnMut(&'a IntervalNode<T, I>),
     {
@@ -192,7 +192,7 @@ where
     }
 
     /// Find intervals in the set overlaping the query `[first, last]` and call `visit` on every overlapping node
-    fn query<F>(&'a self, first: i32, last: i32, mut visit: F)
+    fn query<F>(&'a self, first: i64, last: i64, mut visit: F)
     where
         F: FnMut(&IntervalNode<T, I>),
     {
@@ -202,7 +202,7 @@ where
     }
 
     /// Count the number of intervals in the set overlapping the query `[first, last]`.
-    fn query_count(&self, first: i32, last: i32) -> usize {
+    fn query_count(&self, first: i64, last: i64) -> usize {
         if !self.is_empty() {
             query_recursion_count(&self.nodes, self.root_idx, first, last)
         } else {
@@ -213,7 +213,7 @@ where
     /// Return a pair `(count, cov)`, where `count` gives the number of intervals
     /// in the set overlapping the query, and `cov` the number of positions in the query
     /// interval covered by at least one interval in the set.
-    fn coverage(&self, first: i32, last: i32) -> (usize, usize) {
+    fn coverage(&self, first: i64, last: i64) -> (usize, usize) {
         assert!(last >= first);
 
         if self.is_empty() {
@@ -343,8 +343,8 @@ where
 fn query_recursion<'a, T, I, F>(
     nodes: &'a [IntervalNode<T, I>],
     root_idx: usize,
-    first: i32,
-    last: i32,
+    first: i64,
+    last: i64,
     visit: &mut F,
 ) where
     T: Clone,
@@ -387,8 +387,8 @@ fn query_recursion<'a, T, I, F>(
 fn query_recursion_count<T, I>(
     nodes: &[IntervalNode<T, I>],
     root_idx: usize,
-    first: i32,
-    last: i32,
+    first: i64,
+    last: i64,
 ) -> usize
 where
     T: Clone,
@@ -434,10 +434,10 @@ where
 fn coverage_recursion<T, I>(
     nodes: &[IntervalNode<T, I>],
     root_idx: usize,
-    first: i32,
-    last: i32,
-    mut last_cov: i32,
-) -> (i32, i32, usize)
+    first: i64,
+    last: i64,
+    mut last_cov: i64,
+) -> (i64, i64, usize)
 where
     T: Clone,
     I: IntWithMax,
@@ -509,8 +509,8 @@ where
     I: IntWithMax,
 {
     tree: &'a BasicCOITree<T, I>,
-    prev_first: i32,
-    prev_last: i32,
+    prev_first: i64,
+    prev_last: i64,
     overlapping_intervals: Vec<&'a IntervalNode<T, I>>,
 }
 
@@ -540,7 +540,7 @@ where
     /// `[first, last]` and call `visit` on each. Works equivalently to
     /// `COITrees::query` but queries that overlap prior queries will potentially
     /// be faster.
-    fn query<F>(&mut self, first: i32, last: i32, mut visit: F)
+    fn query<F>(&mut self, first: i64, last: i64, mut visit: F)
     where
         F: FnMut(&'a IntervalNode<T, I>),
     {
@@ -607,8 +607,8 @@ where
 fn sorted_querent_query_firsts<'a, T, I>(
     nodes: &'a [IntervalNode<T, I>],
     root_idx: usize,
-    first: i32,
-    last: i32,
+    first: i64,
+    last: i64,
     overlapping_intervals: &mut Vec<&'a IntervalNode<T, I>>,
 ) where
     T: Clone,
@@ -644,7 +644,7 @@ fn sorted_querent_query_firsts<'a, T, I>(
 
 // True iff the two intervals overlap.
 #[inline(always)]
-fn overlaps(first_a: i32, last_a: i32, first_b: i32, last_b: i32) -> bool {
+fn overlaps(first_a: i64, last_a: i64, first_b: i64, last_b: i64) -> bool {
     first_a <= last_b && last_a >= first_b
 }
 
@@ -713,13 +713,13 @@ fn traverse_recursion<T, I>(
     parent: I,
     inorder: &mut usize,
     preorder: &mut usize,
-) -> (I, i32, f32)
+) -> (I, i64, f32)
 where
     T: Clone,
     I: IntWithMax,
 {
     if start >= end {
-        return (I::MAX, i32::MAX, f32::NAN);
+        return (I::MAX, i64::MAX, f32::NAN);
     }
 
     let root_idx = start + (end - start) / 2;

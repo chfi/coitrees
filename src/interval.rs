@@ -5,11 +5,11 @@ pub trait GenericInterval<T>
 where
     T: Clone,
 {
-    fn first(&self) -> i32;
-    fn last(&self) -> i32;
+    fn first(&self) -> i64;
+    fn last(&self) -> i64;
     fn metadata(&self) -> &T;
 
-    fn len(&self) -> i32 {
+    fn len(&self) -> i64 {
         0.max(self.last() - self.first() + 1)
     }
 
@@ -48,8 +48,8 @@ pub struct Interval<T>
 where
     T: Clone,
 {
-    pub first: i32,
-    pub last: i32,
+    pub first: i64,
+    pub last: i64,
     pub metadata: T,
 }
 
@@ -57,7 +57,7 @@ impl<T> Interval<T>
 where
     T: Clone,
 {
-    pub fn new(first: i32, last: i32, metadata: T) -> Interval<T> {
+    pub fn new(first: i64, last: i64, metadata: T) -> Interval<T> {
         Self {
             first,
             last,
@@ -70,11 +70,11 @@ impl<T> GenericInterval<T> for Interval<T>
 where
     T: Clone,
 {
-    fn first(&self) -> i32 {
+    fn first(&self) -> i64 {
         self.first
     }
 
-    fn last(&self) -> i32 {
+    fn last(&self) -> i64 {
         self.last
     }
 
@@ -87,11 +87,11 @@ impl<'a, T> GenericInterval<T> for Interval<&'a T>
 where
     T: Clone,
 {
-    fn first(&self) -> i32 {
+    fn first(&self) -> i64 {
         self.first
     }
 
-    fn last(&self) -> i32 {
+    fn last(&self) -> i64 {
         self.last
     }
 
@@ -102,7 +102,7 @@ where
 
 #[test]
 fn test_interval_len() {
-    fn make_interval(first: i32, last: i32) -> Interval<()> {
+    fn make_interval(first: i64, last: i64) -> Interval<()> {
         Interval {
             first,
             last,
@@ -173,12 +173,12 @@ pub trait IntervalTree<'a> {
 
     fn is_empty(&self) -> bool;
 
-    fn query<F>(&'a self, first: i32, last: i32, visit: F)
+    fn query<F>(&'a self, first: i64, last: i64, visit: F)
     where
         F: FnMut(&Self::Item);
 
-    fn query_count(&self, first: i32, last: i32) -> usize;
-    fn coverage(&self, first: i32, last: i32) -> (usize, usize);
+    fn query_count(&self, first: i64, last: i64) -> usize;
+    fn coverage(&self, first: i64, last: i64) -> (usize, usize);
 
     fn iter(&'a self) -> Self::Iter;
 }
@@ -198,7 +198,7 @@ pub trait SortedQuerent<'a> {
 
     fn new(tree: &'a Self::Tree) -> Self;
 
-    fn query<F>(&mut self, first: i32, last: i32, visit: F)
+    fn query<F>(&mut self, first: i64, last: i64, visit: F)
     where
         F: FnMut(&Self::Item);
 }

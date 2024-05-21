@@ -5,7 +5,7 @@ mod tests {
     use rand::{thread_rng, Rng};
     use std::collections::HashSet;
 
-    fn random_interval(min_first: i32, max_last: i32, min_len: i32, max_len: i32) -> (i32, i32) {
+    fn random_interval(min_first: i64, max_last: i64, min_len: i64, max_len: i64) -> (i64, i64) {
         let mut rng = thread_rng();
         let len = rng.gen_range(min_len..(max_len + 1));
         let start = rng.gen_range(min_first..(max_last - len + 1));
@@ -33,7 +33,7 @@ mod tests {
         let a: COITree<usize, usize> = COITree::new(&b);
 
         // check that intervals are sorted and that every value is generated
-        let mut last_first = i32::min_value();
+        let mut last_first = i64::min_value();
 
         let mut seen: HashSet<usize> = HashSet::new();
 

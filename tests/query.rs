@@ -6,7 +6,7 @@ mod tests {
 
     // True iff the two intervals overlap.
     #[inline(always)]
-    fn overlaps(first_a: i32, last_a: i32, first_b: i32, last_b: i32) -> bool {
+    fn overlaps(first_a: i64, last_a: i64, first_b: i64, last_b: i64) -> bool {
         first_a <= last_b && last_a >= first_b
     }
 
@@ -14,8 +14,8 @@ mod tests {
     // We test against this algorithm which we assume to be correct.
     fn brute_force_query<T, F>(
         intervals: &[Interval<T>],
-        query_first: i32,
-        query_last: i32,
+        query_first: i64,
+        query_last: i64,
         mut visit: F,
     ) where
         T: Copy,
@@ -31,8 +31,8 @@ mod tests {
     // Brute coverage calculation. `intervals` must be sorted.
     fn brute_force_coverage<T>(
         intervals: &[Interval<T>],
-        query_first: i32,
-        query_last: i32,
+        query_first: i64,
+        query_last: i64,
     ) -> (usize, usize)
     where
         T: Copy,
@@ -59,7 +59,7 @@ mod tests {
 
     // Run queries against both a COITree and by brute force and check that
     // they get the same results.
-    fn check_queries<I>(a: &COITree<u32, I>, b: &[Interval<u32>], queries: &mut [(i32, i32)])
+    fn check_queries<I>(a: &COITree<u32, I>, b: &[Interval<u32>], queries: &mut [(i64, i64)])
     where
         I: IntWithMax,
     {
@@ -85,7 +85,7 @@ mod tests {
         }
     }
 
-    fn check_coverage<I>(a: &COITree<u32, I>, b: &[Interval<u32>], queries: &mut [(i32, i32)])
+    fn check_coverage<I>(a: &COITree<u32, I>, b: &[Interval<u32>], queries: &mut [(i64, i64)])
     where
         I: IntWithMax,
     {
@@ -98,7 +98,7 @@ mod tests {
         }
     }
 
-    fn check_count_queries<I>(a: &COITree<u32, I>, b: &[Interval<u32>], queries: &mut [(i32, i32)])
+    fn check_count_queries<I>(a: &COITree<u32, I>, b: &[Interval<u32>], queries: &mut [(i64, i64)])
     where
         I: IntWithMax,
     {
@@ -118,7 +118,7 @@ mod tests {
     fn check_sorted_querent_queries<I>(
         a: &COITree<u32, I>,
         b: &[Interval<u32>],
-        queries: &mut [(i32, i32)],
+        queries: &mut [(i64, i64)],
     ) where
         I: IntWithMax,
     {
@@ -152,7 +152,7 @@ mod tests {
     fn check_sorted_querent_unsorted_queries<I>(
         a: &COITree<u32, I>,
         b: &[Interval<u32>],
-        queries: &mut [(i32, i32)],
+        queries: &mut [(i64, i64)],
     ) where
         I: IntWithMax,
     {
@@ -180,7 +180,7 @@ mod tests {
         }
     }
 
-    fn random_interval(min_first: i32, max_last: i32, min_len: i32, max_len: i32) -> (i32, i32) {
+    fn random_interval(min_first: i64, max_last: i64, min_len: i64, max_len: i64) -> (i64, i64) {
         let mut rng = thread_rng();
         let len = rng.gen_range(min_len..max_len + 1);
         let start = rng.gen_range(min_first..max_last - len + 1);
@@ -190,15 +190,15 @@ mod tests {
     fn check_random_queries<I, F>(
         n: usize,
         num_queries: usize,
-        max_last: i32,
-        min_len: i32,
-        max_len: i32,
-        query_min_len: i32,
-        query_max_len: i32,
+        max_last: i64,
+        min_len: i64,
+        max_len: i64,
+        query_min_len: i64,
+        query_max_len: i64,
         check: F,
     ) where
         I: IntWithMax,
-        F: Fn(&COITree<u32, I>, &[Interval<u32>], &mut [(i32, i32)]),
+        F: Fn(&COITree<u32, I>, &[Interval<u32>], &mut [(i64, i64)]),
     {
         let min_first = 0;
 
@@ -217,7 +217,7 @@ mod tests {
 
         let a = COITree::new(&b);
 
-        let mut queries: Vec<(i32, i32)> = (0..num_queries)
+        let mut queries: Vec<(i64, i64)> = (0..num_queries)
             .map(|_| random_interval(min_first, max_last, query_min_len, query_max_len))
             .collect();
 
@@ -227,7 +227,7 @@ mod tests {
     fn check_random_queries_default<I, F>(n: usize, num_queries: usize, check: F)
     where
         I: IntWithMax,
-        F: Fn(&COITree<u32, I>, &[Interval<u32>], &mut [(i32, i32)]),
+        F: Fn(&COITree<u32, I>, &[Interval<u32>], &mut [(i64, i64)]),
     {
         let max_last = 1000000;
         let min_len = 20;
@@ -245,7 +245,7 @@ mod tests {
         );
     }
 
-    const CHECKS: [fn(&COITree<u32, usize>, &[Interval<u32>], &mut [(i32, i32)]); 4] = [
+    const CHECKS: [fn(&COITree<u32, usize>, &[Interval<u32>], &mut [(i64, i64)]); 4] = [
         check_queries,
         check_count_queries,
         check_sorted_querent_queries,
@@ -296,7 +296,7 @@ mod tests {
         }
     }
 
-    const CHECKS_U16: [fn(&COITree<u32, u16>, &[Interval<u32>], &mut [(i32, i32)]); 4] = [
+    const CHECKS_U16: [fn(&COITree<u32, u16>, &[Interval<u32>], &mut [(i64, i64)]); 4] = [
         check_queries,
         check_count_queries,
         check_sorted_querent_queries,

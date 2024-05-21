@@ -19,6 +19,10 @@ pub use interval::*;
 mod nosimd;
 pub use nosimd::*;
 
+pub type COITree<T, I> = BasicCOITree<T, I>;
+pub type COITreeSortedQuerent<'a, T, I> = BasicSortedQuerent<'a, T, I>;
+
+/*
 #[cfg(all(target_feature = "avx2", not(feature = "nosimd")))]
 mod avx;
 #[cfg(all(target_feature = "avx2", not(feature = "nosimd")))]
@@ -51,3 +55,4 @@ pub type COITreeSortedQuerent<'a, T, I> = BasicSortedQuerent<'a, T, I>;
 pub type COITreeSortedQuerent<'a, T, I> = AVXSortedQuerent<'a, T, I>;
 #[cfg(all(target_feature = "neon", not(feature = "nosimd")))]
 pub type COITreeSortedQuerent<'a, T, I> = NeonSortedQuerent<'a, T, I>;
+*/
